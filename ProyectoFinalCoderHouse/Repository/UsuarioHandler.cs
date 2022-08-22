@@ -46,6 +46,45 @@ namespace ProyectoFinalCoderHouse.Repository
 
         }
 
+        public static Usuario IniciarSesion(string nombreUsuario, string contraseña)
+        {
+            Usuario usuario = new Usuario();
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Usuario " +
+                                                              "WHERE nombreUsuario = @nombreUsuario " +
+                                                              "AND contraseña = @contraseña", sqlConnection))
+                {
+                    //Add parameters to SQL Query
+                    sqlCommand.Parameters.AddWithValue("@nombreUsuario", nombreUsuario);
+                    sqlCommand.Parameters.AddWithValue("@contraseña", contraseña);
+
+                    sqlConnection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                usuario.Id = Convert.ToInt32(dataReader["Id"]);
+                                usuario.Nombre = dataReader["Nombre"].ToString();
+                                usuario.Apellido = dataReader["Apellido"].ToString();
+                                usuario.NombreUsuario = dataReader["NombreUsuario"].ToString();
+                                usuario.Mail = dataReader["mail"].ToString();
+                                usuario.Contraseña = dataReader["Contraseña"].ToString();
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+
+            return usuario;
+
+        }
+
         public static List<Usuario> GetUsuarios()
         {
             List<Usuario> resultados = new List<Usuario>();
@@ -117,6 +156,41 @@ namespace ProyectoFinalCoderHouse.Repository
             }
 
             return resultados;
+        }
+
+        public static Usuario TraerUsuario(string nombreUsuario)
+        {
+            Usuario usuario = new Usuario();
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Usuario " +
+                                                              "WHERE NombreUsuario = @nombreUsuario", sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@nombreUsuario", nombreUsuario);
+
+                    sqlConnection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                usuario.Id = Convert.ToInt32(dataReader["Id"]);
+                                usuario.Nombre = dataReader["Nombre"].ToString();
+                                usuario.Apellido = dataReader["Apellido"].ToString();
+                                usuario.NombreUsuario = dataReader["NombreUsuario"].ToString();
+                                usuario.Mail = dataReader["mail"].ToString();
+                                usuario.Contraseña = dataReader["Contraseña"].ToString();
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+
+            return usuario;
         }
 
         public static bool EliminarUsuario(int id)

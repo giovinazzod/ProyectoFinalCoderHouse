@@ -16,17 +16,29 @@ namespace ProyectoFinalCoderHouse.Controllers
         }
 
 
+        //[HttpGet("{nombreUsuario}/{contraseña}")] // Recibimos los parámetros por path
+        //public bool Login(string nombreUsuario, string contraseña)
+        //{
+        //    return UsuarioHandler.Login(nombreUsuario, contraseña);
+        //}
+
         [HttpGet("{nombreUsuario}/{contraseña}")] // Recibimos los parámetros por path
-        public bool Login(string nombreUsuario, string contraseña)
+        public Usuario IniciarSesion(string nombreUsuario, string contraseña)
         {
-            return UsuarioHandler.Login(nombreUsuario, contraseña);
+            return UsuarioHandler.IniciarSesion(nombreUsuario, contraseña);
         }
 
-        [HttpGet("{id}")]
-        public List<Usuario> TraerUsuario(int id)
+        [HttpGet("{nombreUsuario}")]
+        public Usuario TraerUsuario(string nombreUsuario)
         {
-            return UsuarioHandler.TraerUsuario(id);
+            return UsuarioHandler.TraerUsuario(nombreUsuario);
         }
+
+        //[HttpGet("{id}")]
+        //public List<Usuario> TraerUsuario(int id)
+        //{
+        //    return UsuarioHandler.TraerUsuario(id);
+        //}
 
         [HttpDelete] // Recibimos los parámetros por Body
         public bool EliminarUsuario([FromBody] int id)
