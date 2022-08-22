@@ -1,4 +1,4 @@
-﻿namespace ProyectoFinalCoderHouse.ADO.Net
+﻿namespace ProyectoFinalCoderHouse.Repository
 {
     public abstract class DbHandler
     {

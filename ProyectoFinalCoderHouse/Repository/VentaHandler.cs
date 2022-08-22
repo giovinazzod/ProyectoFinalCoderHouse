@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ProyectoFinalCoderHouse.ADO.Net
+namespace ProyectoFinalCoderHouse.Repository
 {
     public static class VentaHandler
     {
@@ -40,6 +40,44 @@ namespace ProyectoFinalCoderHouse.ADO.Net
             return resultados;
         }
 
+        public static List<Venta> TraerVentas(int idUsuario)
+        {
+            List<Venta> resultados = new List<Venta>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Venta v " +
+                                                              "INNER JOIN ProductoVendido pv ON v.Id = pv.IdVenta " +
+                                                              "INNER JOIN Producto p ON p.Id = pv.IdProducto " +
+                                                              "INNER JOIN Usuario u ON u.Id = p.IdUsuario " +
+                                                              "WHERE u.Id = @idUsuario", sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@IdUsuario", idUsuario);
+
+                    sqlConnection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Venta venta = new Venta();
+
+                                venta.Id = Convert.ToInt32(dataReader["Id"]);
+                                venta.Comentarios = dataReader["Comentarios"].ToString();
+
+                                resultados.Add(venta);
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+
+                return resultados;
+            }
+        }
+
         internal static bool EliminarVenta(int id)
         {
             bool resultado = false;
@@ -48,7 +86,7 @@ namespace ProyectoFinalCoderHouse.ADO.Net
             {
                 string queryDelete = "DELETE FROM Venta WHERE Id = @Id";
 
-                SqlParameter sqlParameter = new SqlParameter("Id", System.Data.SqlDbType.BigInt);
+                SqlParameter sqlParameter = new SqlParameter("Id", SqlDbType.BigInt);
                 sqlParameter.Value = id;
 
                 sqlConnection.Open();
@@ -59,7 +97,7 @@ namespace ProyectoFinalCoderHouse.ADO.Net
                     int numOfRows = sqlCommand.ExecuteNonQuery();
                     if (numOfRows > 0)
                     {
-                        
+
                         resultado = true;
                     }
                 }
@@ -68,5 +106,7 @@ namespace ProyectoFinalCoderHouse.ADO.Net
 
             return resultado;
         }
+
+
     }
 }

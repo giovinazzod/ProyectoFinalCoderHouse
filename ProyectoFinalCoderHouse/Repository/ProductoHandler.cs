@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ProyectoFinalCoderHouse.ADO.Net
+namespace ProyectoFinalCoderHouse.Repository
 {
     public static class ProductoHandler
     {
@@ -20,6 +20,47 @@ namespace ProyectoFinalCoderHouse.ADO.Net
 
                     using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
                     {
+                        // Me aseguro que haya filas
+                        if (dataReader.HasRows)
+                        {
+                            while (dataReader.Read())
+                            {
+                                Producto producto = new Producto();
+
+                                producto.Id = Convert.ToInt32(dataReader["Id"]);
+                                producto.Descripciones = dataReader["Descripciones"].ToString();
+                                producto.Stock = Convert.ToInt32(dataReader["Stock"]);
+                                producto.IdUsuario = Convert.ToInt32(dataReader["IdUsuario"]);
+                                producto.Costo = Convert.ToDouble(dataReader["Costo"]);
+                                producto.PrecioVenta = Convert.ToDouble(dataReader["PrecioVenta"]);
+
+                                resultados.Add(producto);
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+
+            return resultados;
+        }
+
+        public static List<Producto> TraerProductos(int idUsuario)
+        {
+            List<Producto> resultados = new List<Producto>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("SELECT * FROM Producto " +
+                                                              "WHERE IdUsuario = @IdUsuario", sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@IdUsuario", idUsuario);
+
+                    sqlConnection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        // Me aseguro que haya filas
                         if (dataReader.HasRows)
                         {
                             while (dataReader.Read())
@@ -52,7 +93,7 @@ namespace ProyectoFinalCoderHouse.ADO.Net
             {
                 string queryDelete = "DELETE FROM Producto WHERE Id = @Id";
 
-                SqlParameter sqlParameter = new SqlParameter("Id", System.Data.SqlDbType.BigInt);
+                SqlParameter sqlParameter = new SqlParameter("Id", SqlDbType.BigInt);
                 sqlParameter.Value = id;
 
                 sqlConnection.Open();

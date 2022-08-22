@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProyectoFinalCoderHouse.Controllers.DTO;
+using ProyectoFinalCoderHouse.Controllers.DTOS;
 using ProyectoFinalCoderHouse.Model;
-using ProyectoFinalCoderHouse.ADO.Net;
+using ProyectoFinalCoderHouse.Repository;
 
 namespace ProyectoFinalCoderHouse.Controllers
 {
@@ -16,23 +16,61 @@ namespace ProyectoFinalCoderHouse.Controllers
         }
 
 
-        [HttpDelete (Name = "EliminarUsuario")]
-        public void EliminarUsuario([FromBody] int Id)
+        [HttpGet("{nombreUsuario}/{contraseña}")] // Recibimos los parámetros por path
+        public bool Login(string nombreUsuario, string contraseña)
         {
-            UsuarioHandler.EliminarUsuario(Id);
-            Console.WriteLine("Usuario eliminado");
+            return UsuarioHandler.Login(nombreUsuario, contraseña);
         }
 
-        [HttpPut]
-        public void ModificarUsuario([FromBody] PutUsuario usuario)
+        [HttpGet("{id}")]
+        public List<Usuario> TraerUsuario(int id)
         {
-            Console.WriteLine("Usuario actualizado");
+            return UsuarioHandler.TraerUsuario(id);
         }
 
-        [HttpPost]
-        public void CrearUsuario([FromBody] PostUsuario usuario)
+        [HttpDelete] // Recibimos los parámetros por Body
+        public bool EliminarUsuario([FromBody] int id)
         {
-            Console.WriteLine("Usuario creado");
+            try
+            {
+                return UsuarioHandler.EliminarUsuario(id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        [HttpPut]   //  UPDATE
+        public bool ModificarUsuario([FromBody] PutUsuario usuario)
+        {
+            return UsuarioHandler.ModificarNombreDeUsuario(new Usuario
+            {
+                Id = usuario.Id,
+                Nombre = usuario.NombreUsuario
+            });
+        }
+
+        [HttpPost]  //  INSERT
+        public bool CrearUsuario([FromBody] PostUsuario usuario)
+        {
+            try
+            {
+                return UsuarioHandler.CrearUsuario(new Usuario
+                {
+                    Apellido = usuario.Apellido,
+                    Contraseña = usuario.Contraseña,
+                    Mail = usuario.Mail,
+                    Nombre = usuario.Nombre,
+                    NombreUsuario = usuario.NombreUsuario
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
     }
 }
