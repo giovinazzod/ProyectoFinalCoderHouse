@@ -227,6 +227,56 @@ namespace ProyectoFinalCoderHouse.Repository
             return resultado;
         }
 
+        /*
+            Modificar usuario: Recibe como parámetro todos los datos del objeto usuario y se
+            deberá modificar el mismo con los datos nuevos (No crear uno nuevo).
+         */
+        public static bool ModificarUsuario(Usuario usuario)
+        {
+            bool resultado = false;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                string queryInsert = "UPDATE [SistemaGestion].[dbo].[Usuario] " +
+                                     "SET Nombre = @nombre, " +
+                                     "Apellido = @apellido, " +
+                                     "NombreUsuario = @nombreUsuario, " +
+                                     "Contraseña = @contraseña, " +
+                                     "Mail = @mail " +
+                                     "WHERE Id = @id";
+
+                SqlParameter id = new SqlParameter("id", SqlDbType.BigInt) { Value = usuario.Id };
+                SqlParameter nombre = new SqlParameter("nombre", SqlDbType.VarChar) { Value = usuario.Nombre };
+                SqlParameter apellido = new SqlParameter("apellido", SqlDbType.VarChar) { Value = usuario.Apellido };
+                SqlParameter nombreUsuario = new SqlParameter("nombreUsuario", SqlDbType.VarChar) { Value = usuario.NombreUsuario };
+                SqlParameter contraseña = new SqlParameter("contraseña", SqlDbType.VarChar) { Value = usuario.Contraseña };
+                SqlParameter mail = new SqlParameter("mail", SqlDbType.VarChar) { Value = usuario.Mail };
+
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(queryInsert, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(id);
+                    sqlCommand.Parameters.Add(nombre);
+                    sqlCommand.Parameters.Add(apellido);
+                    sqlCommand.Parameters.Add(nombreUsuario);
+                    sqlCommand.Parameters.Add(contraseña);
+                    sqlCommand.Parameters.Add(mail);
+
+                    int numberOfRows = sqlCommand.ExecuteNonQuery();// Se ejecuta la sentencia SQL y devuelve el nro de filas afectadas
+
+                    if (numberOfRows > 0)
+                    {
+                        resultado = true;
+                    }
+                }
+                sqlConnection.Close();
+
+            }
+
+            return resultado;
+
+        }
 
         public static bool ModificarNombreDeUsuario(Usuario usuario)
         {

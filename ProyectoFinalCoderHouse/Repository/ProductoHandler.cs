@@ -1,4 +1,5 @@
-﻿using ProyectoFinalCoderHouse.Model;
+﻿using Microsoft.Extensions.Hosting;
+using ProyectoFinalCoderHouse.Model;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -85,30 +86,153 @@ namespace ProyectoFinalCoderHouse.Repository
             return resultados;
         }
 
-        internal static bool EliminarProducto(int id)
+
+        /*Crear producto: 
+         * Recibe un producto como parámetro, deberá crearlo, puede ser void, pero validar los datos obligatorios
+         */
+        public static bool CrearProducto(Producto producto)
         {
             bool resultado = false;
 
             using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
             {
-                string queryDelete = "DELETE FROM Producto WHERE Id = @Id";
+                string queryInsert = "INSERT INTO [SistemaGestion].[dbo].[Producto]" +
+                    "(Descripciones, Costo, PrecioVenta, Stock, IdUsuario) VALUES" +
+                    "(@descripciones, @costo, @precioVenta, @stock, @idUsuario);";
 
-                SqlParameter sqlParameter = new SqlParameter("Id", SqlDbType.BigInt);
-                sqlParameter.Value = id;
+                SqlParameter descripciones = new SqlParameter("descripciones", SqlDbType.VarChar) { Value = producto.Descripciones };
+                SqlParameter costo = new SqlParameter("costo", SqlDbType.Decimal) { Value = producto.Costo };
+                SqlParameter precioVenta = new SqlParameter("precioVenta", SqlDbType.Decimal) { Value = producto.PrecioVenta };
+                SqlParameter stock = new SqlParameter("stock", SqlDbType.BigInt) { Value = producto.Stock };
+                SqlParameter idUsuario = new SqlParameter("idUsuario", SqlDbType.VarChar) { Value = producto.IdUsuario };
 
                 sqlConnection.Open();
 
-                using (SqlCommand sqlCommand = new SqlCommand(queryDelete, sqlConnection))
+                using (SqlCommand sqlCommand = new SqlCommand(queryInsert, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(sqlParameter);
-                    int numOfRows = sqlCommand.ExecuteNonQuery();
-                    if (numOfRows > 0)
-                    {
+                    sqlCommand.Parameters.Add(descripciones);
+                    sqlCommand.Parameters.Add(costo);
+                    sqlCommand.Parameters.Add(precioVenta);
+                    sqlCommand.Parameters.Add(stock);
+                    sqlCommand.Parameters.Add(idUsuario);
 
+                    int numberOfRows = sqlCommand.ExecuteNonQuery();// Se ejecuta la sentencia SQL y devuelve el nro de filas afectadas
+
+                    if (numberOfRows > 0)
+                    {
                         resultado = true;
                     }
                 }
                 sqlConnection.Close();
+
+            }
+
+            return resultado;
+        }
+
+        /*Eliminar producto: 
+        * Recibe un id de producto a eliminar y debe eliminarlo de la base de datos 
+        * (eliminar antes sus productos vendidos también, sino no lo podrá hacer).
+        */
+        public static bool EliminarProducto(int id)
+        {
+            // Primero chequeamos que no tenga productosVendidos
+            bool tieneProductosVendidos = false;
+            bool resultado = false;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("select * FROM [SistemaGestion].[dbo].[ProductoVendido] " +
+                                                              "WHERE IdProducto = @Id", sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@Id", id);
+
+                    sqlConnection.Open();
+
+                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (dataReader.HasRows)
+                        {
+                            tieneProductosVendidos = true;
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+
+            // Si no hay productosVendidos, prosigo y elimino el producto
+            if (!tieneProductosVendidos)
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                {
+                    string queryDelete = "DELETE FROM Producto WHERE Id = @Id";
+
+                    SqlParameter sqlParameter = new SqlParameter("Id", SqlDbType.BigInt);
+                    sqlParameter.Value = id;
+
+                    sqlConnection.Open();
+
+                    using (SqlCommand sqlCommand = new SqlCommand(queryDelete, sqlConnection))
+                    {
+                        sqlCommand.Parameters.Add(sqlParameter);
+                        int numOfRows = sqlCommand.ExecuteNonQuery();
+                        if (numOfRows > 0)
+                        {
+                            resultado = true;
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+
+            return resultado;
+
+        }
+
+        /*Modificar producto: 
+         * Recibe un producto como parámetro, debe modificarlo con la nueva información.
+        */
+        public static bool ModificarProducto(Producto producto)
+        {
+            bool resultado = false;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                string queryInsert = "UPDATE [SistemaGestion].[dbo].[Producto] " +
+                                     "SET Descripciones = @descripciones, " +
+                                     "Costo = @costo, " +
+                                     "PrecioVenta = @precioVenta, " +
+                                     "Stock = @stock, " +
+                                     "IdUsuario = @idUsuario " +
+                                     "WHERE Id = @id";
+
+                SqlParameter id = new SqlParameter("id", SqlDbType.BigInt) { Value = producto.Id };
+                SqlParameter descripciones = new SqlParameter("descripciones", SqlDbType.VarChar) { Value = producto.Descripciones };
+                SqlParameter costo = new SqlParameter("costo", SqlDbType.VarChar) { Value = producto.Costo };
+                SqlParameter precioVenta = new SqlParameter("precioVenta", SqlDbType.VarChar) { Value = producto.PrecioVenta };
+                SqlParameter stock = new SqlParameter("stock", SqlDbType.VarChar) { Value = producto.Stock };
+                SqlParameter idUsuario = new SqlParameter("idUsuario", SqlDbType.VarChar) { Value = producto.IdUsuario };
+
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(queryInsert, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(id);
+                    sqlCommand.Parameters.Add(descripciones);
+                    sqlCommand.Parameters.Add(costo);
+                    sqlCommand.Parameters.Add(precioVenta);
+                    sqlCommand.Parameters.Add(stock);
+                    sqlCommand.Parameters.Add(idUsuario);
+
+                    int numberOfRows = sqlCommand.ExecuteNonQuery();// Se ejecuta la sentencia SQL y devuelve el nro de filas afectadas
+
+                    if (numberOfRows > 0)
+                    {
+                        resultado = true;
+                    }
+                }
+                sqlConnection.Close();
+
             }
 
             return resultado;

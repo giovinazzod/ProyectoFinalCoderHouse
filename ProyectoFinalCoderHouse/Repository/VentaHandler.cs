@@ -78,7 +78,7 @@ namespace ProyectoFinalCoderHouse.Repository
             }
         }
 
-        internal static bool EliminarVenta(int id)
+        public static bool EliminarVenta(int id)
         {
             bool resultado = false;
 
@@ -107,6 +107,17 @@ namespace ProyectoFinalCoderHouse.Repository
             return resultado;
         }
 
+        /*Cargar Venta: 
+         * Recibe una lista de productos y el número de IdUsuario de quien la efectuó, 
+         * primero cargar una nueva Venta en la base de datos, luego debe cargar los productos recibidos en la base de 
+         * ProductosVendidos uno por uno por un lado, y descontar el stock en la base de productos por el otro.*/
+        public static bool CargarVenta(Venta venta)
+        {
+            bool resultado = false;
 
+            // Desarrollar
+
+            return resultado;
+        }
     }
 }

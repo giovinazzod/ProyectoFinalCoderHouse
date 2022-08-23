@@ -57,11 +57,23 @@ namespace ProyectoFinalCoderHouse.Controllers
         [HttpPut]   //  UPDATE
         public bool ModificarUsuario([FromBody] PutUsuario usuario)
         {
-            return UsuarioHandler.ModificarNombreDeUsuario(new Usuario
+            try
             {
-                Id = usuario.Id,
-                Nombre = usuario.NombreUsuario
-            });
+                return UsuarioHandler.ModificarUsuario(new Usuario
+                {
+                    Id = usuario.Id,
+                    Apellido = usuario.Apellido,
+                    Contraseña = usuario.Contraseña,
+                    Mail = usuario.Mail,
+                    Nombre = usuario.Nombre,
+                    NombreUsuario = usuario.NombreUsuario
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
 
         [HttpPost]  //  INSERT
