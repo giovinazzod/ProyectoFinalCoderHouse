@@ -8,6 +8,10 @@ namespace ProyectoFinalCoderHouse.Repository
     {
         public const string ConnectionString = "Server=localhost;Initial Catalog=SistemaGestion;Trusted_Connection=True;";
 
+        /// <summary>
+        /// Traer Productos Vendidos
+        /// </summary>
+        /// <returns></returns>
         public static List<ProductoVendido> GetProductosVendidos()
         {
             List<ProductoVendido> resultados = new List<ProductoVendido>();
@@ -42,6 +46,11 @@ namespace ProyectoFinalCoderHouse.Repository
             return resultados;
         }
 
+        /// <summary>
+        /// Traer Productos Vendidos por IdUsuario
+        /// </summary>
+        /// <param name="idUsuario"></param>
+        /// <returns></returns>
         public static List<ProductoVendido> TraerProductosVendidos(int idUsuario)
         {
             List<ProductoVendido> resultados = new List<ProductoVendido>();
@@ -101,6 +110,35 @@ namespace ProyectoFinalCoderHouse.Repository
                     if (numOfRows > 0)
                     {
 
+                        resultado = true;
+                    }
+                }
+                sqlConnection.Close();
+            }
+
+            return resultado;
+        }
+
+        internal static bool EliminarProductoVendidoByIdVenta(int idVenta)
+        {
+            bool resultado = false;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                string queryDelete = "DELETE FROM ProductoVendido WHERE IdVenta = @IdVenta";
+
+                SqlParameter sqlParameter = new SqlParameter("IdVenta", SqlDbType.BigInt);
+                sqlParameter.Value = idVenta;
+
+                sqlConnection.Open();
+
+                // Actualizamos el Stock del producto Vendido en la tabla [SistemaGestion].[dbo].[Producto]
+                using (SqlCommand sqlCommand = new SqlCommand(queryDelete, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(sqlParameter);
+                    int numOfRows = sqlCommand.ExecuteNonQuery();
+                    if (numOfRows > 0)
+                    {
                         resultado = true;
                     }
                 }

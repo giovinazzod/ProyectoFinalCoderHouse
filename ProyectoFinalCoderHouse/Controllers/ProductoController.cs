@@ -23,24 +23,19 @@ namespace ProyectoFinalCoderHouse.Controllers
         }
 
         [HttpPost]  //  INSERT
-        public bool CrearProducto([FromBody] PostProducto producto)
+        public bool CrearProducto([FromBody] Producto producto)
         {
             try
             {
-                return ProductoHandler.CrearProducto(new Producto
-                {
-                    Descripciones = producto.Descripciones,
-                    Costo = producto.Costo,
-                    PrecioVenta = producto.PrecioVenta,
-                    Stock = producto.Stock,
-                    IdUsuario = producto.IdUsuario
-                });
+                return ProductoHandler.CrearProducto(producto);
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
             }
+
         }
 
         [HttpPut]   //  UPDATE

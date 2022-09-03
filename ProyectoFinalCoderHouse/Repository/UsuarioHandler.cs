@@ -8,6 +8,12 @@ namespace ProyectoFinalCoderHouse.Repository
     {
         public const string ConnectionString = "Server=localhost;Initial Catalog=SistemaGestion;Trusted_Connection=True;";
 
+        /// <summary>
+        /// Inicio de sesión v1
+        /// </summary>
+        /// <param name="nombreUsuario"></param>
+        /// <param name="contraseña"></param>
+        /// <returns></returns>
         public static bool Login(string nombreUsuario, string contraseña)
         {
             bool resultado = false;
@@ -46,6 +52,12 @@ namespace ProyectoFinalCoderHouse.Repository
 
         }
 
+        /// <summary>
+        /// Inicio de sesión
+        /// </summary>
+        /// <param name="nombreUsuario"></param>
+        /// <param name="contraseña"></param>
+        /// <returns></returns>
         public static Usuario IniciarSesion(string nombreUsuario, string contraseña)
         {
             Usuario usuario = new Usuario();
@@ -227,10 +239,12 @@ namespace ProyectoFinalCoderHouse.Repository
             return resultado;
         }
 
-        /*
-            Modificar usuario: Recibe como parámetro todos los datos del objeto usuario y se
-            deberá modificar el mismo con los datos nuevos (No crear uno nuevo).
-         */
+        /// <summary>
+        /// Modificar usuario: Recibe como parámetro todos los datos del objeto usuario y se
+        /// deberá modificar el mismo con los datos nuevos (No crear uno nuevo)
+        /// </summary>
+        /// <param name="usuario"></param>
+        /// <returns></returns>
         public static bool ModificarUsuario(Usuario usuario)
         {
             bool resultado = false;
@@ -271,11 +285,8 @@ namespace ProyectoFinalCoderHouse.Repository
                     }
                 }
                 sqlConnection.Close();
-
             }
-
             return resultado;
-
         }
 
         public static bool ModificarNombreDeUsuario(Usuario usuario)
@@ -317,7 +328,7 @@ namespace ProyectoFinalCoderHouse.Repository
         {
             bool resultado = false;
 
-            using(SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
             {
                 string queryInsert = "INSERT INTO [SistemaGestion].[dbo].[Usuario]" +
                     "(Nombre, Apellido, NombreUsuario, Contraseña, Mail) VALUES" +
@@ -331,7 +342,7 @@ namespace ProyectoFinalCoderHouse.Repository
 
                 sqlConnection.Open();
 
-                using(SqlCommand sqlCommand = new SqlCommand(queryInsert, sqlConnection))
+                using (SqlCommand sqlCommand = new SqlCommand(queryInsert, sqlConnection))
                 {
                     sqlCommand.Parameters.Add(nombreParameter);
                     sqlCommand.Parameters.Add(apellidoParameter);
@@ -341,7 +352,7 @@ namespace ProyectoFinalCoderHouse.Repository
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();// Se ejecuta la sentencia SQL y devuelve el nro de filas afectadas
 
-                    if(numberOfRows > 0)
+                    if (numberOfRows > 0)
                     {
                         resultado = true;
                     }
